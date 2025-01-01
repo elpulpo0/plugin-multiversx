@@ -20,5 +20,25 @@
   },
   "peerDependencies": {
     "whatwg-url": "7.1.0"
+  },
+  "pluginType": "elizaos:plugin:1.0.0",
+  "pluginParameters": {
+    "type": "object",
+    "required": ["mvxPrivateKey", "mvxNetwork"],
+    "properties": {
+      "mvxPrivateKey": {
+        "type": "string",
+        "description": "MultiversX wallet private key"
+      },
+      "mvxNetwork": {
+        "type": "string",
+        "description": "MultiversX network",
+        "enum": ["mainnet", "devnet", "testnet"]
+      }
+    }
+  },
+  "pluginEnv": {
+    "MVX_PRIVATE_KEY": "mvxPrivateKey",
+    "MVX_NETWORK": "mvxNetwork"
   }
 }
