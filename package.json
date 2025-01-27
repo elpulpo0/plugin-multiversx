@@ -15,9 +15,7 @@
             }
         }
     },
-    "files": [
-        "dist"
-    ],
+    "files": ["dist"],
     "dependencies": {
         "@elizaos/core": "workspace:*",
         "@multiversx/sdk-core": "13.15.0",
@@ -36,5 +34,16 @@
     },
     "peerDependencies": {
         "whatwg-url": "7.1.0"
+    },
+    "agentConfig": {
+        "pluginType": "elizaos:client:1.0.0",
+        "pluginParameters": {
+            "MVX_PRIVATE_KEY": {
+                "type": "string"
+            },
+            "MVX_NETWORK": {
+                "type": "string"
+            }
+        }
     }
 }
