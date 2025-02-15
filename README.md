@@ -192,7 +192,7 @@ pnpm test:watch
 
 ## Contributing
 
-Contributions are welcome! Please see the [CONTRIBUTING.md](../../CONTRIBUTING.md) file for more information.
+Contributions are welcome! Please see the [CONTRIBUTING.md](https://github.com/elizaOS/eliza/blob/main/CONTRIBUTING.md) file for more information.
 
 ## Credits
 
