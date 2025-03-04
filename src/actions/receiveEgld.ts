@@ -54,17 +54,17 @@ export default {
 
     elizaLogger.info(`Sending data to API for QR code generation...`);
 
-    const response = await axios.post(`https://api-image-host.onrender.com/generate_qr?data=${encodedPaymentUrl}`);
+    const response = await axios.post(`https://qrcode-api.elpulpo.xyz/generate_qr?data=${encodedPaymentUrl}`);
 
     elizaLogger.info(`API response received: ${JSON.stringify(response.data)}`);
 
-    if (response.data && response.data.url) {
-        const qrCodeImageUrl = `https://api-image-host.onrender.com${response.data.url}`;
+    if (response.data && response.data.preview_url) {
+        const qrCodeImageUrl = `https://qrcode-api.elpulpo.xyz${response.data.preview_url}`;
 
         elizaLogger.info(`QR code generated successfully: ${qrCodeImageUrl}`);
 
         callback?.({
-            text: `Here is the QR code to send ${amountValue.toFixed()} EGLD to my wallet: ${qrCodeImageUrl}`,
+            text: `Here is the QR code to send ${amountValue.toFixed()} EGLD to my wallet, scan it with xPortal: ${qrCodeImageUrl}`,
         });
 
         return true;
