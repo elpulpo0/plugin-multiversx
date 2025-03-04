@@ -21,7 +21,7 @@ export default {
         await validateMultiversxConfig(runtime);
         return true;
     },
-
+    
     handler: async (
         runtime: IAgentRuntime,
         message: Memory,

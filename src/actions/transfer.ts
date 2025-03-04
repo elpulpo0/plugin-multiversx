@@ -56,7 +56,7 @@ export default {
         "PAY",
     ],
     validate: async (runtime: IAgentRuntime, message: Memory) => {
-        elizaLogger.log("Validating config for user:", message.userId);
+        elizaLogger.log("Validating send token action for user:", message.userId);
         await validateMultiversxConfig(runtime);
         return true;
     },

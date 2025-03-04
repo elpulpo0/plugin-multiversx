@@ -8,7 +8,6 @@ import {
 } from "@elizaos/core";
 import { WalletProvider } from "../providers/wallet";
 import { validateMultiversxConfig } from "../environment";
-import { BigNumber } from "bignumber.js";
 
 export default {
     name: "GET_ADDRESS",

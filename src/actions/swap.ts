@@ -75,7 +75,7 @@ export default {
     name: "SWAP",
     similes: ["SWAP_TOKEN", "SWAP_TOKENS"],
     validate: async (runtime: IAgentRuntime, message: Memory) => {
-        elizaLogger.log("Validating config for user:", message.userId);
+        elizaLogger.log("Validating swap action for user:", message.userId);
         await validateMultiversxConfig(runtime);
         return true;
     },
