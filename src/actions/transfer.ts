@@ -123,6 +123,8 @@ export default {
             typeof transferContent.receiver === "string" &&
             typeof transferContent.amount === "string";
 
+        elizaLogger.log("Transfer content received:", transferContent);
+
         // Validate transfer content
         if (!isTransferContent) {
             elizaLogger.error("Invalid content for TRANSFER_TOKEN action.");
@@ -186,27 +188,11 @@ export default {
                     transferContent.tokenIdentifier.split("-");
 
                 let identifier = transferContent.tokenIdentifier;
+                
                 if (!nonce) {
-                    const nativeAuthProvider = new NativeAuthProvider({
-                        apiUrl: networkConfig.apiURL,
-                    });
+                    const token = await walletProvider.getTokenFromWallet(identifier);
 
-                    await nativeAuthProvider.initializeClient();
-
-                    const accessToken =
-                        await nativeAuthProvider.getAccessToken(walletProvider);
-
-                    const graphqlProvider = new GraphqlProvider(
-                        networkConfig.graphURL,
-                        { Authorization: `Bearer ${accessToken}` },
-                    );
-
-                    const token = await getToken({
-                        provider: graphqlProvider,
-                        ticker,
-                    });
-
-                    identifier = token.identifier;
+                    identifier = token;
                 }
 
                 const txHash = await walletProvider.sendESDT({

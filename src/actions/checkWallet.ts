@@ -89,7 +89,7 @@ export default {
             {
                 user: "{{agent}}",
                 content: {
-                    text: "Here are the tokens in my wallet: 1500000.00 KWAK, 15000.00 HTM and 354.87 EGLD",
+                    text: "Let me check quickly",
                 },
             },
         ],
@@ -103,7 +103,7 @@ export default {
             {
                 user: "{{agent}}",
                 content: {
-                    text: "Here are the tokens in my wallet: 464300.00 KWAK, 3450.00 QWT and 5.39 EGLD",
+                    text: "Of course, let me see",
                 },
             },
         ],

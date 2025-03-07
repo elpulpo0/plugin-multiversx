@@ -397,4 +397,18 @@ export class WalletProvider {
 
         return this.apiNetworkProvider.getFungibleTokensOfAccount(address);
     }
+
+    public async getTokenFromWallet(ticker: string): Promise<string | null> {
+    const tokens = await this.getTokensData();
+
+    const token = tokens.find(t => t.identifier.startsWith(ticker + "-"));
+
+    if (!token) {
+        console.error("ERROR: Token not found in wallet:", ticker);
+        return null;
+    }
+
+    return token.identifier;
+}
+
 }

@@ -11,7 +11,7 @@ import { validateMultiversxConfig } from "../environment";
 
 export default {
     name: "GET_ADDRESS",
-    similes: ["CHECK_ADDRESS"],
+    similes: ["CHECK_ADDRESS", "GIVE_ADDRESS"],
     description: "Return the agent's wallet address",
     
     validate: async (runtime: IAgentRuntime, message: Memory) => {
@@ -54,13 +54,13 @@ export default {
             {
                 user: "{{user1}}",
                 content: {
-                    text: "What's your address'?",
+                    text: "Can you provide me with your wallet address?",
                 },
             },
             {
                 user: "{{agent}}",
                 content: {
-                    text: "One second, I'll give it to you",
+                    text: "Just a moment, I'll find that for you",
                 },
             },
         ],
@@ -68,15 +68,58 @@ export default {
             {
                 user: "{{user1}}",
                 content: {
-                    text: "Give me your wallet address please",
+                    text: "What is your address?",
                 },
             },
             {
                 user: "{{agent}}",
                 content: {
-                    text: "Ok, let me get that for you",
+                    text: "Give me a second, I'll check it",
                 },
             },
         ],
-    ],
+        [
+            {
+                user: "{{user1}}",
+                content: {
+                    text: "Please share your wallet address",
+                },
+            },
+            {
+                user: "{{agent}}",
+                content: {
+                    text: "I'll take care of that for you right now",
+                },
+            },
+        ],
+        [
+            {
+                user: "{{user1}}",
+                content: {
+                    text: "Can you send me your wallet address?",
+                },
+            },
+            {
+                user: "{{agent}}",
+                content: {
+                    text: "Sure, let me grab that for you",
+                },
+            },
+        ],
+        [
+            {
+                user: "{{user1}}",
+                content: {
+                    text: "May I have your wallet address?",
+                },
+            },
+            {
+                user: "{{agent}}",
+                content: {
+                    text: "Hang tight, I'll fetch it for you",
+                },
+            },
+        ]
+    ]
+
 } as Action;
