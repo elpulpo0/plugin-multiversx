@@ -48,3 +48,8 @@ export const poolSchema = z.object({
     baseAmount: z.string().min(1, { message: "Amount Token A is required." }),
     quoteAmount: z.string().min(1, { message: "Amount Token B is required." }),
 });
+
+export const lendegldSchema = z.object({
+    receiver: z.string().min(1, { message: "Token address is required." }),
+    amount: z.string().min(1, { message: "Amount is required." }),
+});

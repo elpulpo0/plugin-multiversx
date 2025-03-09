@@ -96,70 +96,89 @@ export class WalletProvider {
         return signature;
     }
 
-    /**
-     * Send EGLD tokens to another wallet
-     * @param receiverAddress - Recipient's wallet address
-     * @param amount - Amount of EGLD to send
-     * @returns Transaction hash as a string
-     */
-    public async sendEGLD({
-        receiverAddress,
-        amount,
-    }: {
-        receiverAddress: string;
-        amount: string;
-    }): Promise<string> {
-        try {
-            const hasEgldBalance = await this.hasEgldBalance(amount);
+ /**
+ * Send EGLD tokens to another wallet with optional data and gas limit
+ * @param receiverAddress - Recipient's wallet address
+ * @param amount - Amount of EGLD to send
+ * @param data - Optional additional data for the transaction
+ * @param gasLimit - Optional gas limit for the transaction
+ * @returns Transaction hash as a string
+ */
+public async sendEGLD({
+    receiverAddress,
+    amount,
+    data = "",
+    gasLimit,
+}: {
+    receiverAddress: string;
+    amount: string;
+    data?: string;
+    gasLimit?: number;
+}): Promise<string> {
+    try {
+        const hasEgldBalance = await this.hasEgldBalance(amount);
 
-            if (!hasEgldBalance) {
-                throw new Error("Insufficient balance.");
-            }
-
-            const receiver = new Address(receiverAddress);
-            const value = denominateAmount({ amount, decimals: 18 }); // Convert amount to the smallest unit
-            const senderAddress = this.getAddress();
-
-            // Prepare the transaction factory with the current chain ID
-            const factoryConfig = new TransactionsFactoryConfig({
-                chainID: this.chainID,
-            });
-            const factory = new TransferTransactionsFactory({
-                config: factoryConfig,
-            });
-
-            // Create a native EGLD transfer transaction
-            const transaction = factory.createTransactionForNativeTokenTransfer(
-                {
-                    sender: this.getAddress(),
-                    receiver: receiver,
-                    nativeAmount: BigInt(value),
-                }
-            );
-
-            // Get the sender's account details to set the nonce
-            const account = await this.getAccount(senderAddress);
-            transaction.nonce = BigInt(account.nonce);
-
-            // Sign the transaction
-            const signature = await this.signTransaction(transaction);
-            transaction.signature = signature;
-
-            // Broadcast the transaction to the network
-            const txHash = await this.sendTransaction(transaction);
-
-            elizaLogger.log(`TxHash: ${txHash}`); // Log transaction hash
-            elizaLogger.log(
-                `Transaction URL: ${this.explorerURL}/transactions/${txHash}`
-            ); // View Transaction
-            return txHash;
-        } catch (error) {
-            console.error("Error sending EGLD transaction:", error);
-            throw new Error(
-                `Failed to send EGLD: ${error.message || "Unknown error"}`
-            );
+        if (!hasEgldBalance) {
+            throw new Error("Insufficient balance.");
         }
+
+        const receiver = new Address(receiverAddress);
+        const value = denominateAmount({ amount, decimals: 18 }); // Convert amount to the smallest unit
+        const senderAddress = this.getAddress();
+
+        // Prepare optional data
+        let dataBuffer: Uint8Array | undefined = undefined;
+        if (data) {
+            dataBuffer = new TextEncoder().encode(data);
+        }
+
+        // Prepare the transaction factory with the current chain ID
+        const factoryConfig = new TransactionsFactoryConfig({
+            chainID: this.chainID,
+        });
+        const factory = new TransferTransactionsFactory({
+            config: factoryConfig,
+        });
+
+        // If gasLimit is provided, use it, otherwise let it be undefined
+        const transactionGasLimit = gasLimit ? BigInt(gasLimit) : undefined;
+
+        // Create a native EGLD transfer transaction with optional data
+        const transaction = factory.createTransactionForNativeTokenTransfer({
+            sender: senderAddress,
+            receiver: receiver,
+            nativeAmount: BigInt(value),
+            data: dataBuffer,
+        });
+
+        // Apply the gasLimit if provided
+        if (transactionGasLimit) {
+            transaction.gasLimit = transactionGasLimit;
+        }
+
+        // Get the sender's account details to set the nonce
+        const account = await this.getAccount(senderAddress);
+        transaction.nonce = BigInt(account.nonce);
+
+        // Sign the transaction
+        const signature = await this.signTransaction(transaction);
+        transaction.signature = signature;
+
+        // Broadcast the transaction to the network
+        const txHash = await this.sendTransaction(transaction);
+
+        elizaLogger.log(`TxHash: ${txHash}`); // Log transaction hash
+        elizaLogger.log(
+            `Transaction URL: ${this.explorerURL}/transactions/${txHash}`
+        ); // View Transaction
+        return txHash;
+    } catch (error) {
+        elizaLogger.error("Error sending EGLD transaction:", error);
+        throw new Error(
+            `Failed to send EGLD: ${error.message || "Unknown error"}`
+        );
     }
+}
 
     /**
      * Send ESDT (eStandard Digital Token) tokens to another wallet
@@ -242,7 +261,7 @@ export class WalletProvider {
             elizaLogger.log(`Transaction URL: ${transactionURL}`); // View Transaction
             return txHash;
         } catch (error) {
-            console.error("Error sending ESDT transaction:", error);
+            elizaLogger.error("Error sending ESDT transaction:", error);
             throw new Error(
                 `Failed to send ESDT: ${error.message || "Unknown error"}`
             );
@@ -318,7 +337,7 @@ export class WalletProvider {
 
             return txHash; // Return the transaction hash
         } catch (error) {
-            console.error("Error creating ESDT:", error);
+            elizaLogger.error("Error creating ESDT:", error);
             throw new Error(
                 `Failed to create ESDT: ${error.message || "Unknown error"}`
             ); // Throw an error if creation fails
@@ -404,7 +423,7 @@ export class WalletProvider {
     const token = tokens.find(t => t.identifier.startsWith(ticker + "-"));
 
     if (!token) {
-        console.error("ERROR: Token not found in wallet:", ticker);
+        elizaLogger.error("ERROR: Token not found in wallet:", ticker);
         return null;
     }
 

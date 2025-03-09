@@ -190,27 +190,14 @@ export default {
                 { Authorization: `Bearer ${accessToken}` }
             );
 
-            function normalizeIdentifier(identifier: string): string {
-                return identifier.split("-")[0].toUpperCase();
-            }
-
             async function findTokenIdentifier(
                 ticker: string
             ): Promise<string | null> {
                 try {
-                    const tokenData = await walletProvider.getTokensData();
+                    const identifier = await walletProvider.getTokenFromWallet(ticker);
 
-                    const normalizedTicker = normalizeIdentifier(ticker);
-
-                    const token = tokenData.find(
-                        (token) =>
-                            token.identifier &&
-                            normalizeIdentifier(token.identifier) ===
-                                normalizedTicker
-                    );
-
-                    if (token) {
-                        return token.identifier;
+                    if (identifier) {
+                        return identifier;
                     } else {
                         elizaLogger.error(
                             "Identifier not found for ticker:",
@@ -225,31 +212,29 @@ export default {
             }
 
             async function findTokenBalance(
-                ticker: string
+                identifier: string
             ): Promise<string | null> {
                 try {
                     const tokenData = await walletProvider.getTokensData();
 
-                    const normalizedTicker = normalizeIdentifier(ticker);
 
                     const token = tokenData.find(
                         (token) =>
-                            token.identifier &&
-                            normalizeIdentifier(token.identifier) ===
-                                normalizedTicker
+                            token.identifier ===
+                                identifier
                     );
 
                     if (token) {
                         return token.balance.toString();
                     } else {
                         elizaLogger.error(
-                            "Balance not found for ticker:",
-                            ticker
+                            "Balance not found for identifer:",
+                            identifier
                         );
                         return null;
                     }
                 } catch (error) {
-                    this.elizaLogger.error(
+                    elizaLogger.error(
                         "Error finding token balance:",
                         error
                     );
@@ -558,6 +543,8 @@ export default {
 
             // Step 2: Issue LP Token
 
+            await new Promise(resolve => setTimeout(resolve, 20000));
+
             // Create LP Token name and ticker
             const baseTokenSymbol = baseTokenIdentifier.split("-")[0];
             const quoteTokenSymbol = quoteTokenIdentifier.split("-")[0];
@@ -720,6 +707,8 @@ export default {
 
             // Step 3: Set Local Roles
 
+            await new Promise(resolve => setTimeout(resolve, 20000));
+
             try {
                 if (debugModeOn) {
                     elizaLogger.log("🔵 Sending GraphQL request:");
@@ -783,20 +772,26 @@ export default {
                 const setLocalRolesTransactionOnNetwork =
                     await setLocalRolesWatcher.awaitCompleted(setLocalRolesTx);
 
+                elizaLogger.log(
+                    `Transaction Status: ${JSON.stringify(
+                        setLocalRolesTransactionOnNetwork.status
+                    )}`
+                );
+
                 if (
                     "status" in setLocalRolesTransactionOnNetwork.status &&
-                    setLocalRolesTransactionOnNetwork.status.status ===
-                        "success"
+                    setLocalRolesTransactionOnNetwork.status.status === "success"
                 ) {
-                    if (debugModeOn) {
-                        elizaLogger.log(
-                            "setLocalRoles transaction success, adding initial liquidity.."
-                        );
-                    }
+                    elizaLogger.log(
+                        "setLocalRoles transaction success, adding initial liquidity.."
+                    );
                     callback?.({
                         text: `Step 3/6: Local Roles set successfully, adding initial liquidity..`,
                     });
                 } else {
+                    elizaLogger.error(
+                        "❌ setLocalRoles transaction failed. Check transaction details."
+                    );
                     throw new Error("❌ setLocalRoles transaction failed.");
                 }
             } catch (error) {
@@ -814,6 +809,8 @@ export default {
             }
 
             // Step 4: Add initial liquididty
+
+            await new Promise(resolve => setTimeout(resolve, 20000));
 
             try {
                 const baseValue = denominateAmount({
@@ -976,11 +973,13 @@ export default {
 
             // Step 5: Lock LP Token
 
+            await new Promise(resolve => setTimeout(resolve, 20000));
+
             let lpTokenIdentifier;
 
             try {
                 lpTokenIdentifier = await findTokenIdentifier(lpTokenTicker);
-                const lpTokenBalance = await findTokenBalance(lpTokenTicker);
+                const lpTokenBalance = await findTokenBalance(lpTokenIdentifier);
 
                 const lockTokensVariables = {
                     inputTokens: {
@@ -1079,6 +1078,8 @@ export default {
             }
 
             // Step 6: Enable Swap
+
+            await new Promise(resolve => setTimeout(resolve, 20000));
 
             try {
                 const createPoolUserLpsVariables = {

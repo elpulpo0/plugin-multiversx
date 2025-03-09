@@ -19,6 +19,7 @@ export const MVX_NETWORK_CONFIG = {
         xExchangeLockAddress:
             "erd1qqqqqqqqqqqqqpgq2l97gw2j4wnlem4y2rx7dudqlssjtwpu0n4sd0u3w2",
         xExchangeOriginURL: "https://devnet.xexchange.com",
+        hatomEgldLendingSC: "erd1qqqqqqqqqqqqqpgq2udp46dvs4cvp4urak39t2fqxp7t3lpzv5ysec452j",
     },
     testnet: {
         chainID: "T", // Testnet chain ID
