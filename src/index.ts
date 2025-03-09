@@ -6,12 +6,13 @@ import swap from "./actions/swap";
 import checkWallet from "./actions/checkWallet";
 import getAddress from "./actions/getAddress";
 import receiveEgld from "./actions/receiveEgld";
-import lend_egld from "./actions/lend_egld";
+import lendEgld from "./actions/lendEgld";
+import createBirthdayWarp from "./actions/warps/createBirthdayWarp"
 
 export const multiversxPlugin: Plugin = {
     name: "multiversx",
     description: "MultiversX Plugin for Eliza",
-    actions: [transfer, createToken, createLiquidityPool, swap, checkWallet, getAddress, receiveEgld, lend_egld],
+    actions: [transfer, createToken, createLiquidityPool, swap, checkWallet, getAddress, receiveEgld, lendEgld, createBirthdayWarp],
     evaluators: [],
     providers: [],
 };
