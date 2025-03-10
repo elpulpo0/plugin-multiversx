@@ -81,7 +81,6 @@ const result = await eliza.execute({
         tokenIdentifier: "TEST-a1b2c3",
     },
 });
-```
 
 // Send ESDT with ticker
 const result = await eliza.execute({
