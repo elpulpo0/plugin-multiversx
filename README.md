@@ -52,7 +52,7 @@ ACCESS_TOKEN_MANAGEMENT_TO=everyone  # you can put an userid to limit token mana
 ```typescript
 import { multiversxPlugin } from "@elizaos/plugin-multiversx";
 
-// Send EGLD
+// Send EGLD to an erd address
 const result = await eliza.execute({
     action: "SEND_TOKEN",
     content: {
@@ -62,13 +62,34 @@ const result = await eliza.execute({
     },
 });
 
-// Send ESDT
+// Send EGLD to a herotag
+const result = await eliza.execute({
+    action: "SEND_TOKEN",
+    content: {
+        tokenAddress: "elpulpo",
+        amount: "1",
+        tokenIdentifier: "EGLD",
+    },
+});
+
+// Send ESDT with identifier
 const result = await eliza.execute({
     action: "SEND_TOKEN",
     content: {
         tokenAddress: "erd1...",
         amount: "100",
         tokenIdentifier: "TEST-a1b2c3",
+    },
+});
+```
+
+// Send ESDT with ticker
+const result = await eliza.execute({
+    action: "SEND_TOKEN",
+    content: {
+        tokenAddress: "erd1...",
+        amount: "100",
+        tokenIdentifier: "TEST",
     },
 });
 ```
