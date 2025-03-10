@@ -1,6 +1,6 @@
 # @elizaos/plugin-multiversx
 
-MultiversX blockchain integration plugin for Eliza OS that enables token management and transfers.
+MultiversX blockchain integration plugin for Eliza OS that enables on chain actions.
 
 ## Overview
 
@@ -10,6 +10,11 @@ This plugin aims to be the basis of all interactions with the MultiversX ecosyst
 
 - EGLD and ESDT token transfers
 - Token creation and management
+- Pool creation on xExchange
+- Swap tokens
+- Lend EGLD on Hatom
+- Warp Creation
+- Wallet balance recovery
 - Multiple network support (mainnet, devnet, testnet)
 - Secure transaction signing
 - Automatic nonce management
@@ -27,7 +32,7 @@ Reuse providers and utilities from the existing actions where possible. Add more
 ## Installation
 
 ```bash
-pnpm install @elizaos/plugin-multiversx
+npx elizaos plugins add @elizaos-plugins/plugin-multiversx
 ```
 
 ## Configuration
@@ -105,6 +110,44 @@ const result = await eliza.execute({
         quoteTokenID: "EGLD",
         baseAmount: "1000000",
         quoteAmount: "20"
+    },
+});
+```
+
+### Birthday Warp Creation
+
+```typescript
+const result = await eliza.execute({
+    action: "CREATE_BIRTHDAY_WARP",
+    content: {
+        walletAddress: "erd1ezxnz5lywd5zpcnl7x3u74vc60tgjxdnga3s0608gmnx6rsxmwhqudsllw"
+    },
+});
+```
+
+### Check Wallet
+
+```typescript
+const result = await eliza.execute({
+    action: "CHECK_WALLET"
+});
+```
+
+### Get address
+
+```typescript
+const result = await eliza.execute({
+    action: "GET_ADDRESS"
+});
+```
+
+### Lend Egld
+
+```typescript
+const result = await eliza.execute({
+    action: "LEND_EGLD",
+    content: {
+        "amount": "10"
     },
 });
 ```
