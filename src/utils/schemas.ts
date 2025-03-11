@@ -16,7 +16,7 @@ export const createTokenSchema = z.object({
 });
 
 export const transferSchema = z.object({
-    tokenAddress: z.string().min(1, { message: "Token address is required." }),
+    receiver: z.string().min(1, { message: "Token address is required." }),
     amount: z.string().min(1, { message: "Amount is required." }),
     tokenIdentifier: z
         .string()
