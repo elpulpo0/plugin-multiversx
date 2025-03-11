@@ -14,13 +14,10 @@ import {
 import { WalletProvider } from "../providers/wallet";
 import { validateMultiversxConfig } from "../environment";
 import { transferSchema } from "../utils/schemas";
-import { GraphqlProvider } from "../providers/graphql";
 import { MVX_NETWORK_CONFIG } from "../constants";
-import { NativeAuthProvider } from "../providers/nativeAuth";
-import { getToken } from "../utils/getToken";
 import { resolveHerotag } from "../utils/resolveHerotag";
 export interface TransferContent extends Content {
-    tokenAddress: string;
+    receiver: string;
     amount: string;
     tokenIdentifier?: string;
 }
@@ -28,19 +25,30 @@ import { isUserAuthorized } from "../utils/accessTokenManagement";
 
 const transferTemplate = `Respond with a JSON markdown block containing only the extracted values. Use null for any values that cannot be determined.
 
-Example response:
+### Example responses:
+
+#### Example 1: Token transfer to HeroTag
 \`\`\`json
 {
-    "tokenAddress": "erd12r22hx2q4jjt8e0gukxt5shxqjp9ys5nwdtz0gpds25zf8qwtjdqyzfgzm",
-    "amount": "1",
-    "tokenIdentifier": "PEPE-3eca7c"
+    "receiver": "elpulpo",
+    "amount": "100000",
+    "tokenIdentifier": "KWAK"
+}
+\`\`\`
+
+#### Example 2: EGLD transfer to address
+\`\`\`json
+{
+    "receiver": "erd1pws6zyhwv7t8dut0rkkvxgqatt5dzag4ghdlkqxm3jjutwaytuqque48zp",
+    "amount": "10",
+    "tokenIdentifier": "EGLD",
 }
 \`\`\`
 
 {{recentMessages}}
 
 Given the recent messages, extract the following information about the requested token transfer:
-- Token address
+- Token address or HeroTag
 - Amount to transfer
 - Token identifier
 
@@ -56,7 +64,7 @@ export default {
         "PAY",
     ],
     validate: async (runtime: IAgentRuntime, message: Memory) => {
-        elizaLogger.log("Validating config for user:", message.userId);
+        elizaLogger.log("Validating send token action for user:", message.userId);
         await validateMultiversxConfig(runtime);
         return true;
     },
@@ -86,13 +94,6 @@ export default {
             return false;
         }
 
-        // Initialize or update state
-        // if (!state) {
-        //     state = (await runtime.composeState(message)) as State;
-        // } else {
-        //     state = await runtime.updateRecentMessageState(state);
-        // }
-
         let currentState: State;
         if (!state) {
             currentState = (await runtime.composeState(message)) as State;
@@ -116,8 +117,10 @@ export default {
 
         const transferContent = content.object as TransferContent;
         const isTransferContent =
-            typeof transferContent.tokenAddress === "string" &&
+            typeof transferContent.receiver === "string" &&
             typeof transferContent.amount === "string";
+
+        elizaLogger.log("Transfer content received:", transferContent);
 
         // Validate transfer content
         if (!isTransferContent) {
@@ -138,7 +141,7 @@ export default {
 
             const walletProvider = new WalletProvider(privateKey, network);
 
-            let receiverAddress = transferContent.tokenAddress;
+            let receiverAddress = transferContent.receiver;
 
             if (!receiverAddress || receiverAddress.toLowerCase() === "null") {
                 elizaLogger.error(
@@ -182,27 +185,11 @@ export default {
                     transferContent.tokenIdentifier.split("-");
 
                 let identifier = transferContent.tokenIdentifier;
+                
                 if (!nonce) {
-                    const nativeAuthProvider = new NativeAuthProvider({
-                        apiUrl: networkConfig.apiURL,
-                    });
+                    const token = await walletProvider.getTokenFromWallet(identifier);
 
-                    await nativeAuthProvider.initializeClient();
-
-                    const accessToken =
-                        await nativeAuthProvider.getAccessToken(walletProvider);
-
-                    const graphqlProvider = new GraphqlProvider(
-                        networkConfig.graphURL,
-                        { Authorization: `Bearer ${accessToken}` },
-                    );
-
-                    const token = await getToken({
-                        provider: graphqlProvider,
-                        ticker,
-                    });
-
-                    identifier = token.identifier;
+                    identifier = token;
                 }
 
                 const txHash = await walletProvider.sendESDT({
