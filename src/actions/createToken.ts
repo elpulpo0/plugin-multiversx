@@ -48,7 +48,7 @@ export default {
     name: "CREATE_TOKEN",
     similes: ["DEPLOY_TOKEN"],
     validate: async (runtime: IAgentRuntime, message: Memory) => {
-        elizaLogger.log("Validating config for user:", message.userId);
+        elizaLogger.log("Validating create token action for user:", message.userId);
         await validateMultiversxConfig(runtime);
         return true;
     },
@@ -77,13 +77,6 @@ export default {
             }
             return false;
         }
-
-        // Initialize or update state
-        // if (!state) {
-        //     state = (await runtime.composeState(message)) as State;
-        // } else {
-        //     state = await runtime.updateRecentMessageState(state);
-        // }
 
         // Initialize or update state
         let currentState: State;
