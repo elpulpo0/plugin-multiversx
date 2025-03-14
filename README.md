@@ -22,6 +22,10 @@ This plugin aims to be the basis of all interactions with the MultiversX ecosyst
 - Built-in denomination handling
 - Comprehensive error handling
 
+## Prerequisites
+
+To use the Receive_EGLD action of this plugin, you must set up a QR Code API. The implementation is available here: [QrCode_generator](https://github.com/elpulpo0/QrCode_generator).
+
 ## Adding a new action
 
 Reuse providers and utilities from the existing actions where possible. Add more utilities if you think they will be useful for other actions.
@@ -43,6 +47,7 @@ The plugin requires environment variables or runtime settings:
 MVX_PRIVATE_KEY=your-wallet-private-key
 MVX_NETWORK=devnet  # mainnet, devnet, or testnet
 ACCESS_TOKEN_MANAGEMENT_TO=everyone  # you can put an userid to limit token managament to one user only (use same id as in the database)
+QR_CODE_API_URL=  
 ```
 
 ## Usage

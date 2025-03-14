@@ -34,6 +34,11 @@ export default {
         try {
     const privateKey = runtime.getSetting("MVX_PRIVATE_KEY");
     const network = runtime.getSetting("MVX_NETWORK");
+    const qrCodeApiUrl = runtime.getSetting("QR_CODE_API_URL");
+
+    if (!qrCodeApiUrl) {
+        throw new Error("QR_CODE_API_URL is not defined in runtime settings");
+    }
 
     const walletProvider = new WalletProvider(privateKey, network);
     const address = walletProvider.getAddress().toBech32();
@@ -54,12 +59,12 @@ export default {
 
     elizaLogger.info(`Sending data to API for QR code generation...`);
 
-    const response = await axios.post(`https://qrcode-api.elpulpo.xyz/generate_qr?data=${encodedPaymentUrl}`);
+    const response = await axios.post(`${qrCodeApiUrl}/generate_qr?data=${encodedPaymentUrl}`);
 
     elizaLogger.info(`API response received: ${JSON.stringify(response.data)}`);
 
     if (response.data && response.data.preview_url) {
-        const qrCodeImageUrl = `https://qrcode-api.elpulpo.xyz${response.data.preview_url}`;
+        const qrCodeImageUrl = `${qrCodeApiUrl}${response.data.preview_url}`;
 
         elizaLogger.info(`QR code generated successfully: ${qrCodeImageUrl}`);
 
