@@ -1,6 +1,6 @@
-# @elizaos/plugin-multiversx
+# @elizaos/plugin-multiversx / AI_MEGAWAVE HACKATHON VERSION
 
-MultiversX blockchain integration plugin for Eliza OS that enables token management and transfers.
+MultiversX blockchain integration plugin for Eliza OS that enables on chain actions.
 
 ## Overview
 
@@ -10,12 +10,20 @@ This plugin aims to be the basis of all interactions with the MultiversX ecosyst
 
 - EGLD and ESDT token transfers
 - Token creation and management
+- Pool creation on xExchange
+- Swap tokens
+- Lend EGLD on Hatom
+- Wallet balance recovery
 - Multiple network support (mainnet, devnet, testnet)
 - Secure transaction signing
 - Automatic nonce management
 - Transaction status tracking
 - Built-in denomination handling
 - Comprehensive error handling
+
+## Prerequisites
+
+To use the Receive_EGLD action of this plugin, you must set up a QR Code API. The implementation is available here: [QrCode_generator](https://github.com/elpulpo0/QrCode_generator).
 
 ## Adding a new action
 
@@ -27,7 +35,7 @@ Reuse providers and utilities from the existing actions where possible. Add more
 ## Installation
 
 ```bash
-pnpm install @elizaos/plugin-multiversx
+npx elizaos plugins add @elizaos-plugins/plugin-multiversx
 ```
 
 ## Configuration
@@ -38,6 +46,7 @@ The plugin requires environment variables or runtime settings:
 MVX_PRIVATE_KEY=your-wallet-private-key
 MVX_NETWORK=devnet  # mainnet, devnet, or testnet
 ACCESS_TOKEN_MANAGEMENT_TO=everyone  # you can put an userid to limit token managament to one user only (use same id as in the database)
+QR_CODE_API_URL=  
 ```
 
 ## Usage
@@ -47,7 +56,7 @@ ACCESS_TOKEN_MANAGEMENT_TO=everyone  # you can put an userid to limit token mana
 ```typescript
 import { multiversxPlugin } from "@elizaos/plugin-multiversx";
 
-// Send EGLD
+// Send EGLD to an erd address
 const result = await eliza.execute({
     action: "SEND_TOKEN",
     content: {
@@ -57,13 +66,33 @@ const result = await eliza.execute({
     },
 });
 
-// Send ESDT
+// Send EGLD to a herotag
+const result = await eliza.execute({
+    action: "SEND_TOKEN",
+    content: {
+        tokenAddress: "elpulpo",
+        amount: "1",
+        tokenIdentifier: "EGLD",
+    },
+});
+
+// Send ESDT with identifier
 const result = await eliza.execute({
     action: "SEND_TOKEN",
     content: {
         tokenAddress: "erd1...",
         amount: "100",
         tokenIdentifier: "TEST-a1b2c3",
+    },
+});
+
+// Send ESDT with ticker
+const result = await eliza.execute({
+    action: "SEND_TOKEN",
+    content: {
+        tokenAddress: "erd1...",
+        amount: "100",
+        tokenIdentifier: "TEST",
     },
 });
 ```
@@ -105,6 +134,33 @@ const result = await eliza.execute({
         quoteTokenID: "EGLD",
         baseAmount: "1000000",
         quoteAmount: "20"
+    },
+});
+```
+
+### Check Wallet
+
+```typescript
+const result = await eliza.execute({
+    action: "CHECK_WALLET"
+});
+```
+
+### Get address
+
+```typescript
+const result = await eliza.execute({
+    action: "GET_ADDRESS"
+});
+```
+
+### Lend Egld
+
+```typescript
+const result = await eliza.execute({
+    action: "LEND_EGLD",
+    content: {
+        "amount": "10"
     },
 });
 ```
