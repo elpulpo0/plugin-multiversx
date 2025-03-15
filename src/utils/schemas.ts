@@ -56,3 +56,12 @@ export const lendegldSchema = z.object({
 export const birthdayWarpSchema = z.object({
     walletAddress: z.string().min(1, { message: "walletAddress is required." }),
 });
+
+export const addCollateralSchema = z.object({
+    amount: z.string().min(1, { message: "Amount is required." }),
+    tokenIdentifier: z
+        .string()
+        .transform((val) => (val === "null" ? null : val))
+        .nullable()
+        .optional(),
+});

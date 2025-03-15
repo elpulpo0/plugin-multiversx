@@ -11,14 +11,14 @@ import {
     composeContext,
     type Action,
 } from "@elizaos/core";
-import { WalletProvider } from "../providers/wallet";
-import { MVX_NETWORK_CONFIG } from "../constants";
-import { validateMultiversxConfig } from "../environment";
-import { lendegldSchema } from "../utils/schemas";
+import { WalletProvider } from "../../providers/wallet";
+import { MVX_NETWORK_CONFIG } from "../../constants";
+import { validateMultiversxConfig } from "../../environment";
+import { lendegldSchema } from "../../utils/schemas";
 export interface lendegldContent extends Content {
     amount: string;
 }
-import { isUserAuthorized } from "../utils/accessTokenManagement";
+import { isUserAuthorized } from "../../utils/accessTokenManagement";
 
 const lendegldTemplate = `Respond with a JSON markdown block containing only the extracted value.
 
