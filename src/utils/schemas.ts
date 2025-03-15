@@ -52,3 +52,12 @@ export const poolSchema = z.object({
 export const lendegldSchema = z.object({
     amount: z.string().min(1, { message: "Amount is required." }),
 });
+
+export const addCollateralSchema = z.object({
+    amount: z.string().min(1, { message: "Amount is required." }),
+    tokenIdentifier: z
+        .string()
+        .transform((val) => (val === "null" ? null : val))
+        .nullable()
+        .optional(),
+});

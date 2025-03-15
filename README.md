@@ -12,7 +12,7 @@ This plugin aims to be the basis of all interactions with the MultiversX ecosyst
 - Token creation and management
 - Pool creation on xExchange
 - Swap tokens
-- Lend EGLD on Hatom
+- Lend EGLD and add collateral on Hatom
 - Wallet balance recovery
 - Multiple network support (mainnet, devnet, testnet)
 - Secure transaction signing
@@ -161,6 +161,18 @@ const result = await eliza.execute({
     action: "LEND_EGLD",
     content: {
         "amount": "10"
+    },
+});
+```
+
+### Add Collateral
+
+```typescript
+const result = await eliza.execute({
+    action: "ADD_COLLATERAL",
+    content: {
+        "amount": "40",
+        "tokenIdentifier": "HEGLD"
     },
 });
 ```

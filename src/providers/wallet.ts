@@ -185,16 +185,22 @@ public async sendEGLD({
      * @param receiverAddress - Recipient's wallet address
      * @param amount - Amount of ESDT to send
      * @param identifier - ESDT token identifier (e.g., PEPE-3eca7c)
+     * @param data - Optional additional data for the transaction
+     * @param gasLimit - Optional gas limit for the transaction
      * @returns Transaction hash as a string
      */
     public async sendESDT({
         receiverAddress,
         amount,
         identifier,
+        data,
+        gasLimit,
     }: {
         receiverAddress: string;
         amount: string;
         identifier: string;
+        data?: string;
+        gasLimit?: number;
     }): Promise<string> {
         try {
             const hasEgldBalance = await this.hasEgldBalance();
@@ -234,19 +240,46 @@ public async sendEGLD({
             });
 
             const address = this.getAddress();
+            let transaction: Transaction;
 
-            // Create an ESDT transfer transaction
-            const transaction = factory.createTransactionForESDTTokenTransfer({
-                sender: address,
-                receiver: new Address(receiverAddress),
-                tokenTransfers: [
-                    new TokenTransfer({
-                        token: new Token({ identifier }),
-                        amount: BigInt(value),
-                    }),
-                ],
-            });
+            if (data) {
+                console.log("data found")
+                // Create an ESDT transfer transaction with custom data
+                const tokenIdentifier = new Token({ identifier });
+                const tokenIdentifierHex = Buffer.from(tokenIdentifier.identifier, "utf8").toString("hex");
+                const amountToSend = BigInt(value);
+                const amountToSendHex = amountToSend.toString(16);
+                const dataHex = Buffer.from(data, "utf8").toString("hex")
+                
+                const finalDataString = `ESDTTransfer@${tokenIdentifierHex}@${amountToSendHex}@${dataHex}`;
 
+                const finalData = new TextEncoder().encode(finalDataString);
+
+                transaction = factory.createTransactionForNativeTokenTransfer({
+                    sender: address,
+                    receiver: new Address(receiverAddress),
+                    nativeAmount: BigInt(0),
+                    data: finalData,
+                });
+            } else {
+                // Create an ESDT transfer transaction without custom data
+                transaction = factory.createTransactionForESDTTokenTransfer({
+                    sender: address,
+                    receiver: new Address(receiverAddress),
+                    tokenTransfers: [
+                        new TokenTransfer({
+                            token: new Token({ identifier }),
+                            amount: BigInt(value),
+                        }),
+                    ],
+                });
+            }
+
+            if (gasLimit) {
+                transaction.gasLimit = BigInt(gasLimit);
+            }
+
+            
             // Set the transaction nonce
             const account = await this.getAccount(address);
             transaction.nonce = BigInt(account.nonce);
@@ -257,8 +290,8 @@ public async sendEGLD({
             const txHash = await this.sendTransaction(transaction);
 
             const transactionURL = this.getTransactionURL(txHash);
-            elizaLogger.log(`TxHash: ${txHash}`); // Log transaction hash
-            elizaLogger.log(`Transaction URL: ${transactionURL}`); // View Transaction
+            elizaLogger.log(`TxHash: ${txHash}`);
+            elizaLogger.log(`Transaction URL: ${transactionURL}`);
             return txHash;
         } catch (error) {
             elizaLogger.error("Error sending ESDT transaction:", error);
